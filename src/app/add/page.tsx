@@ -1,10 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react'
 import NavBar from '@/components/NavBar'
-import { useRouter } from 'next/navigation';
 
 export default function Add() {
-    const router = useRouter();
 
     const [employeeData, setEmployeeData] = useState({
         name: "",
@@ -30,7 +28,6 @@ export default function Add() {
 
             if (response.ok) {
                 alert("Employee added successfully");
-                router.push("/");
             }
         } catch (error) {
             console.log(error);

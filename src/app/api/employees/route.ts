@@ -3,9 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
 	try {
-		await prisma.$connect();
 		const employees = await prisma.employee.findMany();
-		await prisma.$disconnect();
+
+		console.log(employees);
+
 		return NextResponse.json(
 			{
 				employees,

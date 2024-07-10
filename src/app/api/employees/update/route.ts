@@ -6,7 +6,6 @@ export async function PATCH(req: NextRequest) {
 	const employee: Employee = await req.json();
 
 	try {
-		await prisma.$connect();
 		await prisma.employee.update({
 			where: {
 				id: employee.id,
@@ -15,7 +14,6 @@ export async function PATCH(req: NextRequest) {
 				...employee,
 			},
 		});
-		await prisma.$disconnect();
 		return NextResponse.json(
 			{
 				success: true,

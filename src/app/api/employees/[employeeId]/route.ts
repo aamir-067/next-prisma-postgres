@@ -6,14 +6,11 @@ export async function GET(
 	{ params }: { params: { employeeId: string } }
 ) {
 	try {
-		await prisma.$connect();
-
 		const employee = await prisma.employee.findUnique({
 			where: {
 				id: +params.employeeId,
 			},
 		});
-		await prisma.$disconnect();
 		return NextResponse.json(
 			{
 				success: true,

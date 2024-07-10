@@ -1,12 +1,10 @@
 "use client";
 import NavBar from '@/components/NavBar'
 import { Employee } from '@prisma/client';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
 const Edit = ({ params }: { params: { employeeId: number } }) => {
     const [loading, setLoading] = useState(true);
-    const router = useRouter();
 
     const [employeeData, setEmployeeData] = useState<Employee>({
         name: "",
@@ -31,24 +29,23 @@ const Edit = ({ params }: { params: { employeeId: number } }) => {
                 })
             });
 
-            if (!res.ok) {
+            const data = await res.json();
+            if (!data.success) {
                 alert("Something went wrong while updating the employee details");
-            }
 
-            router.push("/");
+            } else {
+                alert("Employee details updated successfully");
+
+            }
         } catch (error) {
             alert("Something went wrong while updating the employee details");
             console.log(error);
-            router.back();
+
 
         } finally {
             setLoading(false);
         }
     }
-
-
-
-
 
     useEffect(() => {
         const getEmployeeDetails = async () => {
@@ -69,12 +66,11 @@ const Edit = ({ params }: { params: { employeeId: number } }) => {
             } catch (error) {
                 alert("Something went wrong while getting user details");
                 console.log(error);
-                router.back();
             }
         }
 
         getEmployeeDetails();
-    }, [params.employeeId, router]);
+    }, [params.employeeId]);
 
     return (
         <section className="w-full h-full bg-black px-10">

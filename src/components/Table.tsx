@@ -20,23 +20,23 @@ export function Table() {
     }
 
     const deleteEmployee = async (employeeId: number) => {
+        setEmployees([]);
         try {
             const res = await fetch(`/api/employees/delete/${employeeId}`, { method: "DELETE" });
             if (!res.ok) {
                 alert("Unable to delete employee details");
-            } else {
-                alert("Employee deleted successfully");
-                setEmployees([])
-                await getEmployees();
             }
+            await getEmployees();
         } catch (error) {
             alert("Unable to delete employee details");
         }
     }
 
     useEffect(() => {
+        setEmployees([]);
         getEmployees();
-    }, [])
+
+    }, []);
 
     return (
         <>

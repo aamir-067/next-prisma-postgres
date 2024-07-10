@@ -6,13 +6,11 @@ export async function DELETE(
 	{ params }: { params: { employeeId: string } }
 ) {
 	try {
-		await prisma.$connect();
 		const employee = await prisma.employee.delete({
 			where: {
 				id: +params.employeeId,
 			},
 		});
-		await prisma.$disconnect();
 		return NextResponse.json(
 			{
 				success: true,
