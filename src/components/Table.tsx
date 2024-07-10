@@ -1,7 +1,21 @@
+"use client";
+import { Employee } from '@prisma/client';
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
+
 export function Table() {
+
+    const [employees, setEmployees] = useState<Array<Employee>>([])
+
+    useEffect(() => {
+        (async () => {
+            const employees = await fetch("/api/employees");
+            const data = await employees.json();
+            setEmployees(data.employees);
+        })()
+    }, []);
+
     return (
         <>
             <section className="mx-auto w-full text-white max-w-[700px] px-4 py-4">
@@ -48,35 +62,41 @@ export function Table() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200 bg-black">
-                                        <tr>
-                                            <td className="whitespace-nowrap px-4 py-4">
-                                                <div className="flex items-center">
-                                                    <div className="ml-4">
-                                                        <div className="text-sm font-medium text-white">John Doe</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="whitespace-nowrap px-4 py-4">
-                                                <div className="flex items-center">
-                                                    <div className="ml-4">
-                                                        <div className="text-sm font-medium text-white">30</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="whitespace-nowrap px-12 py-4">
-                                                <div className="text-sm text-white">Male</div>
-                                            </td>
-                                            <td className="whitespace-nowrap px-4 flex gap-4 py-4 text-right text-sm font-medium">
-                                                <Link href={`/edit/1`} className="text-blue-400">
-                                                    Edit
-                                                </Link>
-                                                <button
-                                                    // onClick={() => deleteRecord(person.email)}
-                                                    className="text-red-400">
-                                                    Delete
-                                                </button>
-                                            </td>
-                                        </tr>
+                                        {
+                                            employees?.map((employee: Employee, index) => {
+                                                return (
+                                                    <tr key={index}>
+                                                        <td className="whitespace-nowrap px-4 py-4">
+                                                            <div className="flex items-center">
+                                                                <div className="ml-4">
+                                                                    <div className="text-sm font-medium text-white">{employee.name}</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="whitespace-nowrap px-4 py-4">
+                                                            <div className="flex items-center">
+                                                                <div className="ml-4">
+                                                                    <div className="text-sm font-medium text-white">{employee.age}</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="whitespace-nowrap px-12 py-4">
+                                                            <div className="text-sm text-white">{employee.gender === "M" ? "Male" : "Female"}</div>
+                                                        </td>
+                                                        <td className="whitespace-nowrap px-4 flex gap-4 py-4 text-right text-sm font-medium">
+                                                            <Link href={`/edit/1`} className="text-blue-400">
+                                                                Edit
+                                                            </Link>
+                                                            <button
+                                                                // onClick={() => deleteRecord(person.email)}
+                                                                className="text-red-400">
+                                                                Delete
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })
+                                        }
                                     </tbody>
                                 </table>
                             </div>

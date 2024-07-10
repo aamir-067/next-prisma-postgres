@@ -1,14 +1,82 @@
+"use client";
 import NavBar from '@/components/NavBar'
-import React from 'react'
+import { Employee } from '@prisma/client';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react'
 
-const Edit = ({ params }: { params: { userId: string } }) => {
+const Edit = ({ params }: { params: { employeeId: number } }) => {
+
+    const router = useRouter();
+
+    const [employeeData, setEmployeeData] = useState<Employee>({
+        name: "",
+        age: 0,
+        gender: "M",
+        id: params.employeeId
+    });
+
+
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | undefined) => {
+        e?.preventDefault();
+        try {
+            const res = await fetch("/api/employees/update", {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    ...employeeData
+                })
+            });
+
+            if (!res.ok) {
+                alert("Something went wrong while updating the employee details");
+            }
+
+            router.push("/");
+        } catch (error) {
+            alert("Something went wrong while updating the employee details");
+            console.log(error);
+            router.back();
+
+        }
+    }
+
+
+
+
+
+    useEffect(() => {
+        const getEmployeeDetails = async () => {
+            try {
+                const res = await fetch("/api/employees/1");
+                if (!res.ok) {
+                    alert("Something went wrong while getting user details");
+                    return;
+                }
+                const data = await res.json();
+                setEmployeeData(data.employee);
+            } catch (error) {
+                alert("Something went wrong while getting user details");
+                console.log(error);
+                router.back();
+            }
+        }
+
+        getEmployeeDetails();
+    }, [params.employeeId, router]);
+
+
+
+
     return (
         <section className="w-full h-full bg-black px-10">
             <NavBar />
             <div className="flex items-center justify-center bg-black px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
                 <div className="mx-auto w-full max-w-sm">
                     <h2 className="text-2xl font-bold leading-tight text-white">Edit Employee Details</h2>
-                    <form className="mt-8">
+                    <form onSubmit={handleSubmit} className="mt-8">
                         <div className="space-y-5">
                             <div>
                                 <label htmlFor="name" className="text-base font-medium text-white">
@@ -17,10 +85,10 @@ const Edit = ({ params }: { params: { userId: string } }) => {
                                 </label>
                                 <div className="mt-2">
                                     <input
-                                        // value={name}
+                                        value={employeeData.name}
                                         className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="text"
-                                        // onChange={(e) => { setName(e.target.value) }}
+                                        onChange={(e) => setEmployeeData((prev) => { return { ...prev, name: e.target.value } })}
                                         placeholder="Full Name"
                                         id="name"
                                     ></input>
@@ -33,7 +101,8 @@ const Edit = ({ params }: { params: { userId: string } }) => {
                                 </label>
                                 <div className="mt-2">
                                     <input
-                                        // onChange={(e) => { setEmail(e.target.value) }}
+                                        value={employeeData.age}
+                                        onChange={(e) => setEmployeeData((prev) => { return { ...prev, age: parseInt(e.target.value) } })}
                                         className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="number"
                                         placeholder="Age"
@@ -45,18 +114,24 @@ const Edit = ({ params }: { params: { userId: string } }) => {
                                 <div className="mt-2 flex w-5/12 justify-between">
                                     <div className='flex gap-x-2'>
                                         <label className='text-base font-medium text-white' htmlFor="male">Male</label>
-                                        <input type="radio" name="gender" id="male" />
+                                        <input
+                                            checked={employeeData.gender === "M"}
+                                            onChange={(e) => setEmployeeData((prev) => { return { ...prev, gender: e.target.checked ? "M" : "F" } })}
+                                            type="radio" name="gender" id="male" />
                                     </div>
                                     <div className='flex gap-x-2'>
                                         <label className='text-base font-medium text-white' htmlFor="female">Female</label>
-                                        <input type="radio" name="gender" id="female" />
+                                        <input
+                                            checked={employeeData.gender === "F"}
+                                            onChange={(e) => setEmployeeData((prev) => { return { ...prev, gender: e.target.checked ? "F" : "M" } })}
+                                            type="radio" name="gender" id="female" />
                                     </div>
                                 </div>
                             </div>
                             <div>
                                 <button
                                     type="button"
-                                    // onClick={() => handleSubmit()}
+                                    onClick={() => handleSubmit(undefined)}
                                     className="inline-flex w-full items-center justify-center rounded-md bg-white px-3.5 py-2.5 font-semibold leading-7 text-black hover:bg-white/80"
                                 >
                                     Confirm
