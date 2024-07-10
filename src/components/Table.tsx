@@ -8,13 +8,34 @@ export function Table() {
 
     const [employees, setEmployees] = useState<Array<Employee>>([])
 
-    useEffect(() => {
-        (async () => {
+
+    const getEmployees = async () => {
+        try {
             const employees = await fetch("/api/employees");
             const data = await employees.json();
             setEmployees(data.employees);
-        })()
-    }, []);
+        } catch (error) {
+            alert("Something goes wrong while getting employee details");
+        }
+    }
+
+    const deleteEmployee = async (employeeId: number) => {
+        try {
+            const res = await fetch(`/api/employees/delete/${employeeId}`, { method: "DELETE" });
+            if (!res.ok) {
+                alert("Unable to delete employee details");
+            } else {
+                alert("Employee deleted successfully");
+                await getEmployees();
+            }
+        } catch (error) {
+            alert("Unable to delete employee details");
+        }
+    }
+
+    useEffect(() => {
+        getEmployees();
+    }, [])
 
     return (
         <>
@@ -88,7 +109,7 @@ export function Table() {
                                                                 Edit
                                                             </Link>
                                                             <button
-                                                                // onClick={() => deleteRecord(person.email)}
+                                                                onClick={() => deleteEmployee(employee.id)}
                                                                 className="text-red-400">
                                                                 Delete
                                                             </button>
