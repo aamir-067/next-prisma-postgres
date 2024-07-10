@@ -1,18 +1,19 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
 	req: NextRequest,
 	{ params }: { params: { employeeId: string } }
 ) {
-	const prisma = new PrismaClient();
 	try {
+		await prisma.$connect();
+
 		const employee = await prisma.employee.findUnique({
 			where: {
 				id: +params.employeeId,
 			},
 		});
-		prisma.$disconnect();
+		await prisma.$disconnect();
 		return NextResponse.json(
 			{
 				success: true,

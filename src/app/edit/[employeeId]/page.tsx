@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
 const Edit = ({ params }: { params: { employeeId: number } }) => {
-
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
 
     const [employeeData, setEmployeeData] = useState<Employee>({
@@ -19,6 +19,7 @@ const Edit = ({ params }: { params: { employeeId: number } }) => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | undefined) => {
         e?.preventDefault();
+        setLoading(true);
         try {
             const res = await fetch("/api/employees/update", {
                 method: "PATCH",
@@ -40,6 +41,8 @@ const Edit = ({ params }: { params: { employeeId: number } }) => {
             console.log(error);
             router.back();
 
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -49,14 +52,20 @@ const Edit = ({ params }: { params: { employeeId: number } }) => {
 
     useEffect(() => {
         const getEmployeeDetails = async () => {
+            setLoading(true);
             try {
-                const res = await fetch("/api/employees/1");
+                const res = await fetch(`/api/employees/${params.employeeId}`);
                 if (!res.ok) {
                     alert("Something went wrong while getting user details");
                     return;
                 }
                 const data = await res.json();
-                setEmployeeData(data.employee);
+                if (res.ok) {
+                    setEmployeeData(data.employee);
+                } else {
+                    alert("Something went wrong while getting user details");
+                }
+                setLoading(false);
             } catch (error) {
                 alert("Something went wrong while getting user details");
                 console.log(error);
@@ -67,16 +76,17 @@ const Edit = ({ params }: { params: { employeeId: number } }) => {
         getEmployeeDetails();
     }, [params.employeeId, router]);
 
-
-
-
     return (
         <section className="w-full h-full bg-black px-10">
             <NavBar />
             <div className="flex items-center justify-center bg-black px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
                 <div className="mx-auto w-full max-w-sm">
                     <h2 className="text-2xl font-bold leading-tight text-white">Edit Employee Details</h2>
-                    <form onSubmit={handleSubmit} className="mt-8">
+                    {loading ? (
+                        <div className='w-full mt-20 flex items-center justify-center'>
+                            <p className='text-center'>Loading...</p>
+                        </div>
+                    ) : <form onSubmit={handleSubmit} className="mt-8">
                         <div className="space-y-5">
                             <div>
                                 <label htmlFor="name" className="text-base font-medium text-white">
@@ -138,10 +148,10 @@ const Edit = ({ params }: { params: { employeeId: number } }) => {
                                 </button>
                             </div>
                         </div>
-                    </form>
-                </div>
-            </div>
-        </section>
+                    </form >}
+                </div >
+            </div >
+        </section >
     )
 }
 

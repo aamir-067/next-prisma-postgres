@@ -1,11 +1,12 @@
-import { Employee, PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { Employee } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(req: NextRequest) {
 	const employee: Employee = await req.json();
 
-	const prisma = new PrismaClient();
 	try {
+		await prisma.$connect();
 		await prisma.employee.update({
 			where: {
 				id: employee.id,
@@ -14,7 +15,7 @@ export async function PATCH(req: NextRequest) {
 				...employee,
 			},
 		});
-		prisma.$disconnect();
+		await prisma.$disconnect();
 		return NextResponse.json(
 			{
 				success: true,

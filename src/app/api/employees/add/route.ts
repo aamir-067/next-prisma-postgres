@@ -1,11 +1,10 @@
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 export async function POST(req: NextRequest) {
-	const prisma = new PrismaClient();
 	try {
 		const { age, name, gender } = await req.json();
-		console.log({ age, name, gender });
 
+		await prisma.$connect();
 		const employee = await prisma.employee.create({
 			data: {
 				name: name,
@@ -13,7 +12,7 @@ export async function POST(req: NextRequest) {
 				age: age,
 			},
 		});
-		prisma.$disconnect();
+		await prisma.$disconnect();
 		if (!employee.id) {
 			return NextResponse.json(
 				{ success: false, massage: "record insertion failed" },

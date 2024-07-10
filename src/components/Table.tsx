@@ -26,6 +26,7 @@ export function Table() {
                 alert("Unable to delete employee details");
             } else {
                 alert("Employee deleted successfully");
+                setEmployees([])
                 await getEmployees();
             }
         } catch (error) {
@@ -105,7 +106,7 @@ export function Table() {
                                                             <div className="text-sm text-white">{employee.gender === "M" ? "Male" : "Female"}</div>
                                                         </td>
                                                         <td className="whitespace-nowrap px-4 flex gap-4 py-4 text-right text-sm font-medium">
-                                                            <Link href={`/edit/1`} className="text-blue-400">
+                                                            <Link href={`/edit/${employee.id}`} className="text-blue-400">
                                                                 Edit
                                                             </Link>
                                                             <button
@@ -117,6 +118,11 @@ export function Table() {
                                                     </tr>
                                                 )
                                             })
+                                        }
+                                        {
+                                            employees.length === 0 && (
+                                                <tr><td colSpan={4} className='text-center'>Loading...</td></tr>
+                                            )
                                         }
                                     </tbody>
                                 </table>
