@@ -5,7 +5,7 @@ export async function GET(req: NextRequest) {
 	try {
 		const employees = await prisma.employee.findMany();
 
-		console.log(employees);
+		console.log("employees in server ==>", employees);
 
 		return NextResponse.json(
 			{

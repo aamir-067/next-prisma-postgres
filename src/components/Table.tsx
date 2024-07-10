@@ -1,8 +1,10 @@
 "use client";
-import { Employee } from '@prisma/client';
+import { Employee, PrismaClient } from '@prisma/client';
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
+
+const prisma = new PrismaClient();
 
 export function Table() {
 
@@ -13,6 +15,8 @@ export function Table() {
         try {
             const employees = await fetch("/api/employees");
             const data = await employees.json();
+            console.log("employees in client ==>", data);
+
             setEmployees(data.employees);
         } catch (error) {
             alert("Something goes wrong while getting employee details");
@@ -33,7 +37,7 @@ export function Table() {
     }
 
     useEffect(() => {
-        setEmployees([]);
+
         getEmployees();
 
     }, []);
